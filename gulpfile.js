@@ -23,3 +23,7 @@ gulp.task('js', function () {
 });
 
 gulp.task('default', ['css', 'js']);
+
+gulp.task('watch', function () {
+    return gulp.watch("_sass/**/*",['css'])
+});

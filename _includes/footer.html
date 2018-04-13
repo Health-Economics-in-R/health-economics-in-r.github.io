@@ -20,3 +20,14 @@
     </div>
 </footer>
 <script src="{{ "/assets/js/bundle.js" | relative_url }}"></script>
+<script>
+    var projects = $('.project');
+    projects.on('mouseover', function () {
+        $(this).addClass("active");
+    });
+
+    projects.on('mouseout', function () {
+        $(this).removeClass("active");
+    });
+
+</script>

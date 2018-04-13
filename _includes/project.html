@@ -1,17 +1,16 @@
-<div class="row">
+<div class="row mt-5">
     {% for item in include.items %}
+        {% assign url = item.url || item.github %}
         <div class="col-12 col-sm-6 col-md-4">
             <div class="card project">
                 {% if item.img %}
                     <div class="card-header">
-                    {% if item.url %}
-                        <a href="{{ item.url }}"><img src="{{ item.img }}" class=""/></a>
-                    {% else %}
-                        <img src="{{ item.img }}" class=""/>
-                    {% endif %}
+                        <a href="{{ url }}"><span class="hidden-link"></span></a>
+                        <img src="{{ item.img }}" class="card-logo"/>
                     </div>
                 {% endif %}
                 <div class="card-body">
+                    <a href="{{ url }}"><span class="hidden-link"></span></a>
                     {% if item.name %}
                         <h5 class="card-title">{{ item.name }}</h5>
                     {% endif %}
