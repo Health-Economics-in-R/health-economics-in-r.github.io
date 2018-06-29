@@ -11,8 +11,6 @@ project-list:
 ---
 
 ## Released projects and packages
-These projects are in a usable form. Packages have been developed following
-HELPR's standards, are fully functional, documented and tested, and have been
-released on CRAN.
+These packages are currently in development
 
 {% include project.html items=page.project-list %}
