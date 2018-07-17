@@ -4,4 +4,5 @@ title: People
 show-title: true
 ---
 
-hfdjalfhdjkahfjkldhkf
+![image-title-here](/assets/images/FullSizeRender.jpg){:class="img-responsive"}
+
