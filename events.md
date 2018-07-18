@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: post
 title: Events
 show-title: true
 ---
