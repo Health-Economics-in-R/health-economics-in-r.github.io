@@ -10,7 +10,7 @@ project-list:
     img: https://assets-cdn.github.com/images/icons/emoji/unicode/1f334.png
   - name: QALY
     desc: An R package to calculate health-adjusted life years with discounting and inflated costs.
-    github: https://github.com/n8thangreen/treeSimR
+    github: https://github.com/n8thangreen/QALY
     url: https://n8thangreen.github.io/QALY/
     img: 
 ---
