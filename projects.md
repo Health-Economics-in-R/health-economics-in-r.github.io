@@ -11,7 +11,6 @@ project-list:
     desc: An R package to calculate health-adjusted life years with discounting and inflated costs.
     github: https://github.com/n8thangreen/QALY
     url: https://n8thangreen.github.io/QALY/
-    img: 
 ---
 
 ## In development projects and packages

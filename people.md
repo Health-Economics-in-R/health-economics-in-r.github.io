@@ -2,7 +2,12 @@
 layout: page
 title: People
 show-title: true
+person-list:
+  - name: Nathan Green
+    website:
+    github: https://github.com/n8thangreen/
+    img: /assets/images/FullSizeRender.jpg
+    institution: Imperial College London
 ---
 
-![image-title-here](/assets/images/FullSizeRender.jpg){:height="100px" width="100px"}
-
+{% include person.html items=page.person-list %}
