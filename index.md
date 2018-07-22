@@ -4,7 +4,7 @@ layout: home
 
 <div class="jumbotron">
   <h1 class="display-4">{{ site.title }} <span markdown="1">
-                                         ![image-title-here](/assets/images/caduceus-illustration-vector-84882810.jpg){:height="100px" width="100px"}
+                                         ![image-title-here](/assets/images/logo_transparent.jpg){:height="100px" width="100px"}
                                          </span></h1>
   <p class="lead">{{ site.description }}</p>
 </div>
