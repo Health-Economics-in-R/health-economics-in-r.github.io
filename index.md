@@ -18,10 +18,9 @@ layout: home
 * Improve reproducability
 
 <h2>Latest news</h2>
-<ul>
-  {% for post in site.posts %}
-    <li>
+{% for post in site.posts %}
+   <div>
       <a href="{{ post.url }}">{{ post.title }}</a>
-    </li>
-  {% endfor %}
-</ul>
+      <p class="text-muted">{{ post.date | date_to_string }}</p>
+   </div>
+{% endfor %}
