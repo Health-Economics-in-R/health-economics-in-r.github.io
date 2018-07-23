@@ -9,7 +9,11 @@ long_description: > # this means to ignore newlines
 github_org: health-economics-in-r
 plugins:
   - jekyll-octicons
+  - jekyll-maps
 header_pages:
   - about.md
   - projects.md
   - people.md
+maps:
+  google:
+    api_key: AIzaSyABGwi8GI3d4p4i9Lrcjg5BfIBNcEz9BIQ
