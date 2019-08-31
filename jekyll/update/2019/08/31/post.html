@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="title" content="HERMES" />
+    <meta name="description" content="Health Economics in R for Modelling and Evaluations Studies." />
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+</head><body><header class="site-header" role="banner">
+
+    <div class="wrapper"><nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="/">HERMES</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#mainNav" aria-controls="mainNav"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav mr-auto"><li class="nav-item">
+                                    <a class="nav-link "
+                                       href="/about.html">About</a>
+                                </li><li class="nav-item">
+                                    <a class="nav-link "
+                                       href="/projects.html">Projects</a>
+                                </li><li class="nav-item">
+                                    <a class="nav-link "
+                                       href="/people.html">People</a>
+                                </li></ul>
+                </div>
+            </nav></div>
+</header>
+<main class="container pt-3 pb-5" aria-label="Content">
+        <h1></h1>
+
+<h2>
+HTA Code Challenge: Participant submissions and discussion
+</h2>
+<hr />
+
+<h3 id="general-thoughts">General thoughts</h3>
+
+<p>This was the first time that we’ve tried something like this.
+The idea was to make it a relatively simple set of problem to tackle but also sophisticated enough that there’d be enough for some of the more advanced R users to tackle. This is clearly a tricky balance to strike and, judging by the relatively low number of submissions, perhaps not one we got right.
+There are other considerations of course such as simply people not having enough time or just not wanting to do extra work. That said, the submissions we did have were of a good standard. In the following I will expand on the some of the thinking behind my solutions and how participants tackled the questions.</p>
+
+<h4 id="c1">C1</h4>
+<p>This question is really just setting the scene and calculating one-cycle decision tree QALYs.</p>
+
+<p>An issue that will come up time and again in this set of questions is how to represent the data. This is not a trivial decision since the choices made early on will impact how we do the calculation later.</p>
+
+<p>I simply assign individual variables to the probabilities and a named vector to the utilities. This is partly because I use the probabilities inside a matrix later on.</p>
+
+<p>I chose the tribble function which is like a transposed sort of tibble which itself is a nicer version of the ubiquitous data.frame. It has some nice properties like when printing to screen it gives column types and uses colour, amongst other things.</p>
+
+<p>Within a single list, named entries by the start state are these tribbles. I recommend using extra spaces when specifying these so that the column entries all line up and its easier to read.</p>
+
+<p>Note also that I had to distinguish between starting in a particular state and transitioning to it, which I do by appending a zero such as <code class="highlighter-rouge">well0</code>. The compliment of an event is prepended with <code class="highlighter-rouge">n</code> such as <code class="highlighter-rouge">ndead</code>.</p>
+
+<h5 id="submissions">Submissions</h5>
+
+<h4 id="c2">C2</h4>
+
+<p>This is when some of the work in C1 pays off. I decided to get estimates via simulating some population.
+In the original paper there is only a single death state. I decided to separate types of death depending on what the preceding state was so death from AIDS is <code class="highlighter-rouge">diea</code>, death from cancer is <code class="highlighter-rouge">diec</code> and everything else is <code class="highlighter-rouge">dead</code>.</p>
+
+<p>We look over each member of the cohort.
+In each iteration an individual starts in the <code class="highlighter-rouge">well</code> state and is simulated until they enter a death state.</p>
+
+<p>Because these are binary trees we can simple compare the event probability with a uniform random number between 0 and 1. The result of following a branch gives us the probability for the next random event in the same way.</p>
+
+<p>Finally, each utility and state trajectory are saved in a list. We can then sum each individual and then take the mean. I use <code class="highlighter-rouge">map</code> from the <code class="highlighter-rouge">purrr</code> package but base <code class="highlighter-rouge">apply</code> would do just as well. Unfortunately, for <code class="highlighter-rouge">n = 1000</code> its not a very good estimate. This is prime for some parallelisation but that is for another time.</p>
+
+<h5 id="submissions-1">Submissions</h5>
+
+<h3 id="c3">C3</h3>
+
+<p>Once we’ve worked out the transition matrix this is moving towards something that should be familiar to regular Markov modellers.
+I put the probabilities for each state in a list and then applied <code class="highlighter-rouge">do.call</code> using <code class="highlighter-rouge">rbind</code> to create a matrix. There are lots of different ways of doing this down to personal preference.
+To demonstrate a more robust way of creating objects, I use a constructor type function which can then check for errors.
+The actual calculation is again done by individual level simulation. This time though we can use the multinomial random sampling function in base R <code class="highlighter-rouge">rmultinom</code> instead of the uniform method for the binary probabilities.
+Again the accuracy isn’t great though.</p>
+
+<h5 id="submissions-2">Submissions</h5>
+
+<h3 id="c4">C4</h3>
+
+<p>So this is the regular Markov model case.
+We wrap the calculation in to a function. The actual work is done on the two lines where the current state populations are multiplied by the transition probabilty matrix or state utilities. The key thing is the use of <code class="highlighter-rouge">%*%</code> which is the dot product operator.</p>
+
+<p>The total expected QALYs are much more accurate.</p>
+
+<h5 id="submissions-3">Submissions</h5>
+
+<h3 id="c5">C5</h3>
+
+<p>The rolling-back of the Markov-cycle tree is done via recursion.
+It may be worth noting that there are more than one way to represent the Bellman equation for this problem depending on the order of operations.</p>
+
+<p>This equation does have an exact solution for an infinite number cylces. This would depend on the transtion matrix being invertible.
+Because the probability transition matrix can be written in upper traingular form we can write the equivalent calculation in recursive form.</p>
+
+<h5 id="submissions-4">Submissions</h5>
+
+<h3 id="summary-and-lessons-learned">Summary and lessons learned</h3>
+
+<p>Finding the right problem to base this challenge on was an initial challenge in itself.
+I think that perhaps the questions were not clearly defined enough but this is always going to happen to some degree.
+I was happy that they allowed for the demonstration of some more interesting programming approaches.
+In future, if we do something like this again I think we may focus more of data manipulation and function structure rather than different models. If its a standard model but we include additional complications that may be more interesting and useful to potential participants, like the input data in different formats or calculating different statistics.</p>
+
+
+
+</main><footer class="footer">
+    <div class="container text-center pt-3">
+        <ul class="list-inline">
+            <li class="list-inline-item">
+                <a href="mailto:nathan.green@imperial.ac.uk" title="Email me">
+                    <svg height="32" class="octicon octicon-mail" viewBox="0 0 14 16" version="1.1" width="28" aria-hidden="true"><path fill-rule="evenodd" d="M0 4v8c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H1c-.55 0-1 .45-1 1zm13 0L7 9 1 4h12zM1 5.5l4 3-4 3v-6zM2 12l3.5-3L7 10.5 8.5 9l3.5 3H2zm11-.5l-4-3 4-3v6z"/></svg>
+                </a>
+            </li>
+            <li class="list-inline-item">
+                <a href="https://github.com/health-economics-in-r" title="GitHub">
+                    <svg height="32" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                </a>
+            </li>
+        </ul>
+        <span class="copyright text-muted">
+             HERMES - Health Economics in R for Modelling and Evaluation Studies
+            &nbsp;|&nbsp;
+            2019
+        </span>
+    </div>
+</footer>
+<script src="/assets/js/bundle.js"></script>
+<script>
+    var projects = $('.project');
+    projects.on('mouseover', function () {
+        $(this).addClass("active");
+    });
+
+    projects.on('mouseout', function () {
+        $(this).removeClass("active");
+    });
+
+</script></body>
+
+</html>
